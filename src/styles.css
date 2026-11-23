@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Custom sleek scrollbars for 3-column desktop panels */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.6);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.9);
+}
+
+/* Airflow animated dash path */
+@keyframes airflowStream {
+  0% {
+    stroke-dashoffset: 48;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-airflow {
+  stroke-dasharray: 8 8;
+  animation: airflowStream 0.85s linear infinite;
+}
+
+.animate-airflow-slow {
+  stroke-dasharray: 8 8;
+  animation: airflowStream 1.7s linear infinite;
+}
+
+/* Vocal cord vibration keyframe */
+@keyframes vocalVibrate {
+  0%, 100% {
+    transform: translateY(0px) scaleY(1);
+  }
+  25% {
+    transform: translateY(-1.2px) scaleY(1.06);
+  }
+  75% {
+    transform: translateY(1.2px) scaleY(0.94);
+  }
+}
+
+.vocal-vibrating {
+  animation: vocalVibrate 0.09s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center center;
+}
