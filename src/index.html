@@ -1,15 +1,23 @@
 <!doctype html>
-<html lang="vi" class="dark">
+<html lang="vi">
 <head>
   <meta charset="utf-8">
   <title>Lautform — Trực quan hóa khẩu hình & Phát âm tiếng Đức chuẩn IPA (45 Âm vị)</title>
   <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta
     name="description"
     content="Công cụ mã nguồn mở miễn phí 100% trực quan hóa giải phẫu khoang miệng SVG & hướng dẫn phát âm đầy đủ 45 âm vị IPA tiếng Đức (Tiếng Việt, Deutsch, English)."
   >
-  <meta name="theme-color" content="#090d16">
+  <meta name="theme-color" content="#f8fafc" id="theme-color-meta">
+  <script>
+    try {
+      if (localStorage.getItem('lautform_theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.getElementById('theme-color-meta')?.setAttribute('content', '#090d16');
+      }
+    } catch (e) {}
+  </script>
 
   <!-- OpenGraph (Facebook, Zalo, Discord, Telegram) -->
   <meta property="og:type" content="website">
@@ -37,7 +45,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="assets/svg/app-icon.svg">
 </head>
-<body class="bg-slate-950 text-slate-100 antialiased selection:bg-rose-500/30 selection:text-rose-200 overflow-x-hidden">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-rose-500/20 dark:selection:bg-rose-500/30 selection:text-rose-900 dark:selection:text-rose-200 overflow-x-hidden">
   <app-root></app-root>
 </body>
 </html>

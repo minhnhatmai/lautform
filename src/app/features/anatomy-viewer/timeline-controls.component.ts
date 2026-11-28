@@ -9,12 +9,12 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
   imports: [CommonModule],
   template: `
     <div
-      class="p-3.5 rounded-2xl dark:bg-slate-900/95 bg-white border dark:border-slate-800 border-slate-200 shadow-lg space-y-3 select-none"
+      class="p-3 sm:p-3.5 rounded-2xl dark:bg-slate-900/95 bg-white border dark:border-slate-800 border-slate-200 shadow-sm dark:shadow-lg space-y-2.5 sm:space-y-3 select-none"
     >
       <!-- Top Row: Phase Indicator + Timeline Scrubber Track -->
       <div class="space-y-1.5">
-        <div class="flex items-center justify-between text-[11px]">
-          <div class="flex items-center gap-1.5">
+        <div class="flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
+          <div class="flex flex-wrap items-center gap-1">
             <span class="dark:text-slate-400 text-slate-500">
               {{ phonemeService.ui().timeline.phaseLabel }}
             </span>
@@ -25,43 +25,43 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
               [ngClass]="
                 audioService.currentPhase() === 'rest'
                   ? 'bg-slate-700 text-white'
-                  : 'dark:text-slate-400 text-slate-500 hover:text-slate-200'
+                  : 'dark:text-slate-400 text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
               "
             >
               {{ phonemeService.ui().timeline.phaseRest }}
             </button>
-            <span class="text-slate-600">→</span>
+            <span class="text-slate-400 dark:text-slate-600">→</span>
             <button
               type="button"
               (click)="audioService.jumpToPhase('target')"
               class="px-2 py-0.5 rounded-md font-semibold transition-colors"
               [ngClass]="
                 audioService.currentPhase() === 'target'
-                  ? 'bg-rose-500/25 text-rose-300 border border-rose-500/40'
-                  : 'dark:text-slate-400 text-slate-500 hover:text-rose-300'
+                  ? 'bg-rose-50 dark:bg-rose-500/25 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-500/40'
+                  : 'dark:text-slate-400 text-slate-500 hover:text-rose-600 dark:hover:text-rose-300'
               "
             >
               {{ phonemeService.ui().timeline.phaseTarget }} {{ phonemeService.selectedPhoneme().symbol }}
             </button>
-            <span class="text-slate-600">→</span>
+            <span class="text-slate-400 dark:text-slate-600">→</span>
             <button
               type="button"
               (click)="audioService.jumpToPhase('release')"
               class="px-2 py-0.5 rounded-md font-medium transition-colors"
               [ngClass]="
                 audioService.currentPhase() === 'release'
-                  ? 'bg-indigo-500/25 text-indigo-300 border border-indigo-500/40'
-                  : 'dark:text-slate-400 text-slate-500 hover:text-slate-200'
+                  ? 'bg-indigo-50 dark:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-500/40'
+                  : 'dark:text-slate-400 text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
               "
             >
               {{ phonemeService.ui().timeline.phaseRelease }}
             </button>
           </div>
 
-          <div class="font-mono text-[11px] dark:text-slate-400 text-slate-500 flex items-center gap-2">
+          <div class="font-mono text-[11px] dark:text-slate-400 text-slate-500 flex items-center gap-2 ml-auto">
             <span>
               {{ phonemeService.ui().timeline.frameLabel }}
-              <strong class="dark:text-slate-200 text-slate-700">{{ audioService.currentFrame() }}</strong
+              <strong class="dark:text-slate-200 text-slate-800">{{ audioService.currentFrame() }}</strong
               >/{{ audioService.totalFrames }}
             </span>
             <span>•</span>
@@ -70,14 +70,14 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
         </div>
 
         <!-- Custom Scrubber Bar with Highlighted Phoneme Target Zone -->
-        <div class="relative h-7 flex items-center">
+        <div class="relative h-8 flex items-center">
           <!-- Background Track -->
           <div
             class="w-full h-2.5 rounded-full dark:bg-slate-800 bg-slate-200 overflow-hidden relative"
           >
             <!-- Target Phoneme Window Highlight [30% - 70%] -->
             <div
-              class="absolute top-0 bottom-0 bg-rose-500/30 border-x border-rose-400/60"
+              class="absolute top-0 bottom-0 bg-rose-500/25 dark:bg-rose-500/30 border-x border-rose-400/70 dark:border-rose-400/60"
               [style.left.%]="audioService.phonemeWindow()[0] * 100"
               [style.width.%]="
                 (audioService.phonemeWindow()[1] - audioService.phonemeWindow()[0]) * 100
@@ -93,6 +93,8 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
 
           <!-- Range Input Overlay for smooth scrubbing -->
           <input
+            id="timeline-scrubber"
+            name="timelineScrubber"
             type="range"
             min="0"
             max="1"
@@ -118,7 +120,7 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
           <button
             type="button"
             (click)="audioService.togglePlay()"
-            class="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl font-semibold text-xs text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 shadow-md shadow-rose-600/20 transition-all active:scale-95"
+            class="inline-flex items-center gap-2 px-4 py-2 sm:py-1.5 rounded-xl font-semibold text-xs text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 shadow-md shadow-rose-600/20 transition-all active:scale-95"
           >
             @if (audioService.isPlaying()) {
               <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
@@ -139,7 +141,7 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
             type="button"
             (click)="audioService.stepFrame(-1)"
             [title]="phonemeService.ui().timeline.stepBackTitle"
-            class="p-1.5 rounded-lg border dark:border-slate-800 border-slate-200 dark:bg-slate-950 bg-slate-100 dark:text-slate-300 text-slate-700 hover:border-slate-600 text-xs font-mono"
+            class="px-2 py-2 sm:py-1.5 rounded-lg border dark:border-slate-800 border-slate-200 dark:bg-slate-950 bg-slate-100 dark:text-slate-300 text-slate-700 hover:border-slate-400 dark:hover:border-slate-600 text-xs font-mono"
           >
             -1f
           </button>
@@ -147,7 +149,7 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
             type="button"
             (click)="audioService.stepFrame(1)"
             [title]="phonemeService.ui().timeline.stepForwardTitle"
-            class="p-1.5 rounded-lg border dark:border-slate-800 border-slate-200 dark:bg-slate-950 bg-slate-100 dark:text-slate-300 text-slate-700 hover:border-slate-600 text-xs font-mono"
+            class="px-2 py-2 sm:py-1.5 rounded-lg border dark:border-slate-800 border-slate-200 dark:bg-slate-950 bg-slate-100 dark:text-slate-300 text-slate-700 hover:border-slate-400 dark:hover:border-slate-600 text-xs font-mono"
           >
             +1f
           </button>
@@ -159,11 +161,11 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
           <button
             type="button"
             (click)="audioService.toggleFocusOnPhoneme()"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all"
+            class="inline-flex items-center gap-1.5 px-2.5 py-2 sm:py-1.5 rounded-lg text-xs font-medium border transition-all"
             [ngClass]="
               audioService.focusOnPhoneme()
-                ? 'bg-rose-500/20 text-rose-300 border-rose-500/50'
-                : 'dark:bg-slate-950 bg-slate-100 dark:border-slate-800 border-slate-200 dark:text-slate-300 text-slate-700 hover:border-slate-700'
+                ? 'bg-rose-50 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-500/50'
+                : 'dark:bg-slate-950 bg-slate-100 dark:border-slate-800 border-slate-200 dark:text-slate-300 text-slate-700 hover:border-slate-400 dark:hover:border-slate-700'
             "
           >
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -185,11 +187,11 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
           <button
             type="button"
             (click)="audioService.toggleSlowMotion()"
-            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all"
+            class="inline-flex items-center gap-1 px-2.5 py-2 sm:py-1.5 rounded-lg text-xs font-medium border transition-all"
             [ngClass]="
               audioService.isSlowMotion()
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
-                : 'dark:bg-slate-950 bg-slate-100 dark:border-slate-800 border-slate-200 dark:text-slate-300 text-slate-700 hover:border-slate-700'
+                ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-400 dark:border-amber-500/50'
+                : 'dark:bg-slate-950 bg-slate-100 dark:border-slate-800 border-slate-200 dark:text-slate-300 text-slate-700 hover:border-slate-400 dark:hover:border-slate-700'
             "
           >
             <span>{{ phonemeService.ui().timeline.slowMotion }}</span>
@@ -199,11 +201,11 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
           <button
             type="button"
             (click)="audioService.toggleLoop()"
-            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all"
+            class="inline-flex items-center gap-1 px-2.5 py-2 sm:py-1.5 rounded-lg text-xs font-medium border transition-all"
             [ngClass]="
               audioService.isLooping()
-                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                : 'dark:bg-slate-950 bg-slate-100 dark:border-slate-800 border-slate-200 dark:text-slate-300 text-slate-700 hover:border-slate-700'
+                ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/50'
+                : 'dark:bg-slate-950 bg-slate-100 dark:border-slate-800 border-slate-200 dark:text-slate-300 text-slate-700 hover:border-slate-400 dark:hover:border-slate-700'
             "
           >
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

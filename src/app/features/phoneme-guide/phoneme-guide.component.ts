@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PhonemeDataService } from '../../core/services/phoneme-data.service';
 import { AudioSyncService } from '../../core/services/audio-sync.service';
@@ -10,30 +10,35 @@ import { ExampleWord } from '../../core/models/phoneme.model';
   imports: [CommonModule],
   template: `
     <aside
-      class="h-full flex flex-col dark:bg-slate-900/75 bg-white border-l dark:border-slate-800/80 border-slate-200 overflow-y-auto p-4 space-y-5 select-none"
+      class="flex flex-col dark:bg-slate-900/75 bg-white p-4 space-y-5 select-none"
+      [ngClass]="
+        naturalHeight()
+          ? 'h-auto'
+          : 'h-full border-l dark:border-slate-800/80 border-slate-200 overflow-y-auto'
+      "
     >
       <!-- 1. Phoneme Identity Header Card -->
       <div
-        class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-rose-950/40 border border-slate-800 shadow-lg space-y-3"
+        class="p-4 rounded-2xl bg-gradient-to-br from-white via-rose-50/50 to-pink-50/40 dark:from-slate-900 dark:via-slate-900 dark:to-rose-950/40 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-lg space-y-3"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="flex items-center gap-3">
             <div
-              class="w-14 h-14 rounded-2xl bg-rose-500/15 border border-rose-500/40 flex items-center justify-center font-mono text-2xl font-bold text-rose-400 shadow-inner shrink-0"
+              class="w-14 h-14 rounded-2xl bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/40 flex items-center justify-center font-mono text-2xl font-bold text-rose-600 dark:text-rose-400 shadow-inner shrink-0"
             >
               {{ phonemeService.selectedPhoneme().symbol }}
             </div>
             <div>
               <span
-                class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 mb-1"
+                class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30 mb-1"
               >
                 {{ phonemeService.ui().guide.spellingBadge }}
                 {{ phonemeService.selectedPhoneme().graphemes }}
               </span>
-              <h2 class="text-sm font-bold text-white leading-snug">
+              <h2 class="text-sm font-bold text-slate-900 dark:text-white leading-snug">
                 {{ phonemeService.selectedPhoneme().subCategory }}
               </h2>
-              <p class="text-[11px] text-slate-400 italic mt-0.5">
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 italic mt-0.5">
                 {{ phonemeService.selectedPhoneme().ipaTechnicalName }}
               </p>
             </div>
@@ -46,8 +51,8 @@ import { ExampleWord } from '../../core/models/phoneme.model';
               class="p-2.5 rounded-xl border transition-all"
               [ngClass]="
                 shareCopied()
-                  ? 'bg-emerald-600/20 border-emerald-500/60 text-emerald-300'
-                  : 'bg-slate-800/80 hover:bg-slate-700 border-slate-700 text-slate-200'
+                  ? 'bg-emerald-50 dark:bg-emerald-600/20 border-emerald-400 dark:border-emerald-500/60 text-emerald-700 dark:text-emerald-300'
+                  : 'bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200'
               "
               [title]="
                 shareCopied()
@@ -56,7 +61,7 @@ import { ExampleWord } from '../../core/models/phoneme.model';
               "
             >
               @if (shareCopied()) {
-                <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               } @else {
@@ -87,10 +92,10 @@ import { ExampleWord } from '../../core/models/phoneme.model';
 
         <!-- Comparison Insight Box -->
         <div
-          class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/90 text-xs space-y-1.5"
+          class="p-2.5 rounded-xl bg-amber-50/70 dark:bg-slate-950/80 border border-amber-200/80 dark:border-slate-800/90 text-xs space-y-1.5"
         >
-          <div class="flex items-center justify-between">
-            <span class="text-amber-400 font-semibold flex items-center gap-1.5">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-amber-700 dark:text-amber-400 font-semibold flex items-center gap-1.5">
               <span>
                 {{ phonemeService.ui().guide.compareHeader }}
                 {{ phonemeService.activeComparisonSymbol() }}
@@ -99,11 +104,11 @@ import { ExampleWord } from '../../core/models/phoneme.model';
             <button
               type="button"
               (click)="phonemeService.toggleComparison()"
-              class="text-[11px] px-2 py-0.5 rounded font-medium transition-colors"
+              class="text-[11px] px-2 py-0.5 rounded font-medium transition-colors shrink-0"
               [ngClass]="
                 phonemeService.showComparison()
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                  ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-500/40'
+                  : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
               "
             >
               {{
@@ -113,7 +118,7 @@ import { ExampleWord } from '../../core/models/phoneme.model';
               }}
             </button>
           </div>
-          <p class="text-[11px] text-slate-300 leading-relaxed">
+          <p class="text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed">
             {{ phonemeService.selectedPhoneme().comparisonNote }}
           </p>
         </div>
@@ -137,7 +142,7 @@ import { ExampleWord } from '../../core/models/phoneme.model';
               [ngClass]="
                 isWordSelected(word)
                   ? 'dark:bg-rose-500/15 bg-rose-50 border-rose-500/60 shadow-sm'
-                  : 'dark:bg-slate-950/60 bg-slate-50 dark:border-slate-800/80 border-slate-200 hover:border-slate-600'
+                  : 'dark:bg-slate-950/60 bg-slate-50 dark:border-slate-800/80 border-slate-200 hover:border-slate-300 dark:hover:border-slate-600'
               "
             >
               <div class="flex items-center gap-3">
@@ -159,7 +164,7 @@ import { ExampleWord } from '../../core/models/phoneme.model';
                     <span class="font-bold text-sm dark:text-white text-slate-900">
                       {{ word.word }}
                     </span>
-                    <span class="font-mono text-xs text-rose-400 font-semibold">
+                    <span class="font-mono text-xs text-rose-600 dark:text-rose-400 font-semibold">
                       {{ word.ipa }}
                     </span>
                   </div>
@@ -198,7 +203,7 @@ import { ExampleWord } from '../../core/models/phoneme.model';
               class="p-3 rounded-xl dark:bg-slate-950/70 bg-slate-50 border dark:border-slate-800/80 border-slate-200 flex items-start gap-2.5"
             >
               <span
-                class="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5"
+                class="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-500/20 border border-emerald-300 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5"
               >
                 {{ idx + 1 }}
               </span>
@@ -212,8 +217,8 @@ import { ExampleWord } from '../../core/models/phoneme.model';
 
       <!-- 4. Common Mistakes & Correction Tips -->
       <section class="space-y-2.5 pb-2">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-          <span class="w-1.5 h-3.5 rounded-full bg-amber-400"></span>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+          <span class="w-1.5 h-3.5 rounded-full bg-amber-500 dark:bg-amber-400"></span>
           {{ phonemeService.ui().guide.mistakesTitle }}
         </h3>
 
@@ -226,7 +231,7 @@ import { ExampleWord } from '../../core/models/phoneme.model';
               class="p-3.5 rounded-2xl dark:bg-amber-950/15 bg-amber-50/70 border border-amber-500/30 space-y-2"
             >
               <div class="flex items-start gap-2">
-                <span class="text-amber-400 font-bold text-sm leading-none mt-0.5">⚠</span>
+                <span class="text-amber-500 dark:text-amber-400 font-bold text-sm leading-none mt-0.5">⚠</span>
                 <div>
                   <div class="text-xs font-bold dark:text-amber-300 text-amber-900">
                     {{ phonemeService.ui().guide.confusedWithPrefix }}
@@ -242,7 +247,7 @@ import { ExampleWord } from '../../core/models/phoneme.model';
               <div
                 class="p-2.5 rounded-xl dark:bg-emerald-950/30 bg-emerald-50 border border-emerald-500/30 flex items-start gap-2"
               >
-                <span class="text-emerald-400 text-xs font-bold shrink-0 mt-0.5">
+                <span class="text-emerald-600 dark:text-emerald-400 text-xs font-bold shrink-0 mt-0.5">
                   {{ phonemeService.ui().guide.tipPrefix }}
                 </span>
                 <p class="text-xs dark:text-emerald-200 text-emerald-900 leading-relaxed">
@@ -259,6 +264,7 @@ import { ExampleWord } from '../../core/models/phoneme.model';
 export class PhonemeGuideComponent {
   readonly phonemeService = inject(PhonemeDataService);
   readonly audioService = inject(AudioSyncService);
+  readonly naturalHeight = input<boolean>(false);
   readonly shareCopied = signal<boolean>(false);
 
   isWordSelected(word: ExampleWord): boolean {

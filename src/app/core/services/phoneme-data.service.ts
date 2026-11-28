@@ -13,6 +13,9 @@ import {
 } from '../data/ui-translations.data';
 
 export type ExplanationLanguage = 'vi' | 'de' | 'en';
+export type MobileNavTab = 'visualizer' | 'ipa' | 'guide';
+
+const THEME_STORAGE_KEY = 'lautform_theme';
 
 export interface PhonemeSubGroupSection {
   key: PhonemeSubGroup;
@@ -130,14 +133,17 @@ export class PhonemeDataService {
   /** Góc nhìn giải phẫu đang chọn: Mặt bên | Từ trên xuống | Thanh quản */
   readonly activeViewTab = signal<AnatomyViewTab>('sagittal');
 
+  /** Tab điều hướng chính trên điện thoại (< 768px): Visualizer | 45 IPA | Guide */
+  readonly activeMobileTab = signal<MobileNavTab>('visualizer');
+
   /** Các lớp hiển thị (Layer Checkboxes) trong khung mô phỏng giải phẫu */
   readonly showAllLabels = signal<boolean>(true);
   readonly showAirflow = signal<boolean>(true);
   readonly showPaperTest = signal<boolean>(false);
   readonly showComparison = signal<boolean>(false);
 
-  /** Chế độ giao diện tối (mặc định true cho mô phỏng giải phẫu) */
-  readonly isDarkMode = signal<boolean>(true);
+  /** Chế độ giao diện tối (mặc định false -> Bright Mode) */
+  readonly isDarkMode = signal<boolean>(false);
 
   /** Trạng thái mở hộp thoại Cộng đồng & Bản quyền */
   readonly isCommunityModalOpen = signal<boolean>(false);
@@ -217,6 +223,7 @@ export class PhonemeDataService {
   });
 
   constructor() {
+    this.initThemeAndMobileDefaults();
     this.initFromUrlQueryParams();
 
     // Đồng bộ URL query parameters để người dùng/giáo viên có thể chia sẻ link trực tiếp tới từng âm IPA
@@ -247,6 +254,30 @@ export class PhonemeDataService {
 
       window.history.replaceState({}, '', url.toString());
     });
+  }
+
+  private initThemeAndMobileDefaults(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    let isDark = false;
+    try {
+      isDark = window.localStorage.getItem(THEME_STORAGE_KEY) === 'dark';
+    } catch {
+      isDark = false;
+    }
+    this.applyTheme(isDark);
+  }
+
+  private applyTheme(isDark: boolean): void {
+    this.isDarkMode.set(isDark);
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.toggle('dark', isDark);
+      document
+        .getElementById('theme-color-meta')
+        ?.setAttribute('content', isDark ? '#090d16' : '#f8fafc');
+    }
   }
 
   private initFromUrlQueryParams(): void {
@@ -360,6 +391,20 @@ export class PhonemeDataService {
     this.activeViewTab.set(tab);
   }
 
+  /** Chuyển tab điều hướng trên điện thoại */
+  setMobileTab(tab: MobileNavTab): void {
+    this.activeMobileTab.set(tab);
+  }
+
+  /** Chuyển tới âm vị trước hoặc tiếp theo trong danh sách */
+  stepPhoneme(delta: -1 | 1): void {
+    const list = this.allPhonemes();
+    if (list.length === 0) return;
+    const currentIdx = list.findIndex((p) => p.id === this.selectedPhoneme().id);
+    const nextIdx = (currentIdx + delta + list.length) % list.length;
+    this.selectPhoneme(list[nextIdx]);
+  }
+
   /** Bật/tắt các lớp hiển thị trên khung mô phỏng */
   toggleLabels(checked?: boolean): void {
     this.showAllLabels.update((v) => (checked !== undefined ? checked : !v));
@@ -377,12 +422,16 @@ export class PhonemeDataService {
     this.showComparison.update((v) => (checked !== undefined ? checked : !v));
   }
 
-  /** Bật/tắt chế độ Sáng/Tối */
+  /** Bật/tắt chế độ Sáng/Tối và lưu vào localStorage */
   toggleTheme(): void {
     const next = !this.isDarkMode();
-    this.isDarkMode.set(next);
-    if (typeof document !== 'undefined') {
-      document.documentElement.classList.toggle('dark', next);
+    this.applyTheme(next);
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light');
+      } catch {
+        // Ignore storage write errors in private/restricted contexts
+      }
     }
   }
 

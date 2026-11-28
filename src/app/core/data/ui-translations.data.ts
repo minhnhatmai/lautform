@@ -159,6 +159,14 @@ export interface UiTranslationDictionary {
     githubRepoLabel: string;
     closeBtn: string;
   };
+  mobileNav: {
+    tabVisualizer: string;
+    tabIpa: string;
+    tabGuide: string;
+    changeSoundBtn: string;
+    prevSoundTitle: string;
+    nextSoundTitle: string;
+  };
 }
 
 export const UI_TRANSLATIONS: Record<ExplanationLanguage, UiTranslationDictionary> = {
@@ -174,7 +182,7 @@ export const UI_TRANSLATIONS: Record<ExplanationLanguage, UiTranslationDictionar
       voiceless: 'Vô thanh (Hơi)',
       languageLabel: 'Ngôn ngữ',
       themeDarkTitle: 'Chuyển sang giao diện Sáng',
-      themeLightTitle: 'Chuyển sang giao diện Tối (Khuyên dùng cho giải phẫu)'
+      themeLightTitle: 'Chuyển sang giao diện Tối'
     },
     sidebar: {
       title: 'Bảng 45 Âm Vị IPA Tiếng Đức',
@@ -357,6 +365,14 @@ export const UI_TRANSLATIONS: Record<ExplanationLanguage, UiTranslationDictionar
       copyCurrentLinkBtn: 'Sao chép link tới âm đang xem',
       githubRepoLabel: 'Xem mã nguồn & Hướng dẫn đóng góp (GitHub)',
       closeBtn: 'Đóng'
+    },
+    mobileNav: {
+      tabVisualizer: 'Khẩu hình',
+      tabIpa: '45 Âm IPA',
+      tabGuide: 'Hướng dẫn',
+      changeSoundBtn: 'Đổi âm',
+      prevSoundTitle: 'Âm trước',
+      nextSoundTitle: 'Âm tiếp theo'
     }
   },
 
@@ -372,7 +388,7 @@ export const UI_TRANSLATIONS: Record<ExplanationLanguage, UiTranslationDictionar
       voiceless: 'Stimmlos (Atemstrom)',
       languageLabel: 'Sprache',
       themeDarkTitle: 'Zum hellen Modus wechseln',
-      themeLightTitle: 'Zum dunklen Modus wechseln (Empfohlen)'
+      themeLightTitle: 'Zum dunklen Modus wechseln'
     },
     sidebar: {
       title: 'Vollständige IPA-Tabelle (45 Laute)',
@@ -553,6 +569,14 @@ export const UI_TRANSLATIONS: Record<ExplanationLanguage, UiTranslationDictionar
       copyCurrentLinkBtn: 'Link zum aktuellen Laut kopieren',
       githubRepoLabel: 'Quellcode & Mitwirken (GitHub)',
       closeBtn: 'Schließen'
+    },
+    mobileNav: {
+      tabVisualizer: 'Vokaltrakt',
+      tabIpa: '45 IPA-Laute',
+      tabGuide: 'Anleitung',
+      changeSoundBtn: 'Laut',
+      prevSoundTitle: 'Vorheriger Laut',
+      nextSoundTitle: 'Nächster Laut'
     }
   },
 
@@ -568,7 +592,7 @@ export const UI_TRANSLATIONS: Record<ExplanationLanguage, UiTranslationDictionar
       voiceless: 'Voiceless (Airflow)',
       languageLabel: 'Language',
       themeDarkTitle: 'Switch to Light Mode',
-      themeLightTitle: 'Switch to Dark Mode (Recommended for Anatomy)'
+      themeLightTitle: 'Switch to Dark Mode'
     },
     sidebar: {
       title: 'Complete German IPA Chart (45)',
@@ -752,6 +776,14 @@ export const UI_TRANSLATIONS: Record<ExplanationLanguage, UiTranslationDictionar
       copyCurrentLinkBtn: 'Copy link to current phoneme',
       githubRepoLabel: 'Source Code & Contribution Guide (GitHub)',
       closeBtn: 'Close'
+    },
+    mobileNav: {
+      tabVisualizer: 'Visualizer',
+      tabIpa: '45 IPA',
+      tabGuide: 'Guide',
+      changeSoundBtn: 'Sounds',
+      prevSoundTitle: 'Previous sound',
+      nextSoundTitle: 'Next sound'
     }
   }
 };

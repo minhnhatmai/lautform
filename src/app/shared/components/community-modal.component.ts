@@ -45,7 +45,7 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
             <button
               type="button"
               (click)="close()"
-              class="p-1.5 rounded-lg dark:text-slate-400 text-slate-500 hover:bg-slate-800 hover:text-white transition-colors"
+              class="p-1.5 rounded-lg dark:text-slate-400 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
               [title]="phonemeService.ui().community.closeBtn"
             >
               ✕
@@ -57,7 +57,7 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
             class="p-4 rounded-xl dark:bg-emerald-950/20 bg-emerald-50 border border-emerald-500/30 space-y-1.5"
           >
             <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold border border-emerald-500/30">
+              <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-mono text-[10px] font-bold border border-emerald-500/30">
                 MIT LICENSE
               </span>
               <h3 class="text-xs font-bold dark:text-emerald-300 text-emerald-900">
@@ -74,7 +74,7 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
             class="p-4 rounded-xl dark:bg-sky-950/20 bg-sky-50 border border-sky-500/30 space-y-1.5"
           >
             <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-400 font-mono text-[10px] font-bold border border-sky-500/30">
+              <span class="px-2 py-0.5 rounded-md bg-sky-500/15 dark:bg-sky-500/20 text-sky-700 dark:text-sky-400 font-mono text-[10px] font-bold border border-sky-500/30">
                 CC BY-SA / GFDL
               </span>
               <h3 class="text-xs font-bold dark:text-sky-300 text-sky-900">
@@ -96,7 +96,7 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
                 <div
                   class="p-3 rounded-xl dark:bg-slate-950/70 bg-slate-50 border dark:border-slate-800 border-slate-200 space-y-1"
                 >
-                  <div class="text-xs font-bold text-rose-400">
+                  <div class="text-xs font-bold text-rose-600 dark:text-rose-400">
                     {{ idx + 1 }}. {{ step.title }}
                   </div>
                   <p class="text-[11px] dark:text-slate-400 text-slate-600 leading-relaxed">
@@ -137,10 +137,19 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
               </button>
 
               <a
+                href="https://github.com/minhnhatmai/lautform"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium dark:bg-slate-800 bg-slate-100 dark:text-slate-200 text-slate-700 hover:border-slate-400 dark:hover:border-slate-600 border dark:border-slate-700 border-slate-200 transition-colors"
+              >
+                <span>GitHub ↗</span>
+              </a>
+
+              <a
                 href="https://commons.wikimedia.org/wiki/Category:German_pronunciation"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium dark:bg-slate-800 bg-slate-100 dark:text-slate-200 text-slate-700 hover:border-slate-600 border dark:border-slate-700 border-slate-200 transition-colors"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium dark:bg-slate-800 bg-slate-100 dark:text-slate-200 text-slate-700 hover:border-slate-400 dark:hover:border-slate-600 border dark:border-slate-700 border-slate-200 transition-colors"
               >
                 <span>Wikimedia Commons ↗</span>
               </a>
@@ -149,7 +158,7 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
             <button
               type="button"
               (click)="close()"
-              class="px-4 py-1.5 rounded-xl text-xs font-semibold dark:bg-slate-800 bg-slate-200 dark:text-slate-200 text-slate-800 hover:bg-slate-700 hover:text-white transition-colors"
+              class="px-4 py-1.5 rounded-xl text-xs font-semibold dark:bg-slate-800 bg-slate-200 dark:text-slate-200 text-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               {{ phonemeService.ui().community.closeBtn }}
             </button>
