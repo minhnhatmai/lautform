@@ -46,9 +46,19 @@ export class AudioSyncService {
    */
   readonly phonemeWindow = computed<[number, number]>(() => [0.3, 0.7]);
 
+  /** Tiến trình hiệu dụng (0.0 -> 1.0): khi bật "Tập trung vào âm", ánh xạ toàn bộ [30% -> 70%] thành [0% -> 100%] để mô phỏng trọn vẹn Rest -> Target -> Release */
+  readonly effectiveProgress = computed<number>(() => {
+    const p = this.progress();
+    if (!this.focusOnPhoneme()) {
+      return p;
+    }
+    const [winStart, winEnd] = this.phonemeWindow();
+    return Math.max(0, Math.min(1, (p - winStart) / Math.max(0.01, winEnd - winStart)));
+  });
+
   /** Xác định giai đoạn phát âm hiện tại: Nghỉ (rest) | Đỉnh phát âm (target) | Nhả âm (release) */
   readonly currentPhase = computed<ArticulationPhase>(() => {
-    const p = this.progress();
+    const p = this.effectiveProgress();
     const [start, end] = this.phonemeWindow();
     if (p < start) {
       return 'rest';
@@ -64,7 +74,7 @@ export class AudioSyncService {
    */
   readonly targetIntensity = computed<number>(() => {
     const phoneme = this.phonemeData.selectedPhoneme();
-    const p = this.progress();
+    const p = this.effectiveProgress();
     const isTwoStage = phoneme.manner === 'plosive' || phoneme.manner === 'affricate';
     const start = 0.3;
     const end = isTwoStage ? 0.75 : 0.7;
@@ -92,7 +102,7 @@ export class AudioSyncService {
   readonly interpolatedOrganPaths = computed<SvgOrganPaths>(() => {
     const phoneme = this.phonemeData.selectedPhoneme();
     const { rest, target, release } = phoneme.svgKeyframes;
-    const p = this.progress();
+    const p = this.effectiveProgress();
 
     if (phoneme.manner === 'plosive' || phoneme.manner === 'affricate') {
       if (p <= 0.3) {
@@ -133,6 +143,7 @@ export class AudioSyncService {
   private rafId: number | null = null;
   private lastTimestamp = 0;
   private lastPhonemeId = '';
+  private forceIsolatedAudio = false;
   private audioElement: HTMLAudioElement | null = null;
   private audioCtx: AudioContext | null = null;
 
@@ -161,26 +172,30 @@ export class AudioSyncService {
   }
 
   /** Phát âm vị hiện tại hoặc từ ví dụ */
-  play(word?: ExampleWord): void {
+  play(word?: ExampleWord, options?: { isolatedAudio?: boolean }): void {
     const phoneme = this.phonemeData.selectedPhoneme();
     const activeWord = word ?? this.phonemeData.selectedExampleWord();
+    this.forceIsolatedAudio = Boolean(options?.isolatedAudio);
 
     if (word) {
       this.phonemeData.selectExampleWord(word);
     }
 
-    const [winStart] = this.phonemeWindow();
+    const [winStart, winEnd] = this.phonemeWindow();
+    const current = this.progress();
     const startProg = this.focusOnPhoneme()
-      ? winStart
-      : this.progress() >= 0.96 || this.progress() === 0.5
+      ? current <= winStart + 0.005 || current >= winEnd - 0.01 || Math.abs(current - 0.5) < 0.001
+        ? winStart
+        : current
+      : current >= 0.96 || Math.abs(current - 0.5) < 0.001
         ? 0
-        : this.progress();
+        : current;
 
     this.progress.set(startProg);
     this.isPlaying.set(true);
     this.lastTimestamp = performance.now();
 
-    this.triggerSynchronizedAudio(phoneme, activeWord);
+    this.triggerSynchronizedAudio(phoneme, activeWord, this.forceIsolatedAudio);
 
     this.cancelRaf();
     const tick = (now: number) => {
@@ -191,24 +206,25 @@ export class AudioSyncService {
       this.lastTimestamp = now;
 
       const speedMultiplier = this.isSlowMotion() ? 0.5 : 1.0;
-      const totalDur = this.duration();
-      const [startBound, endBound] = this.focusOnPhoneme()
-        ? this.phonemeWindow()
-        : [0, 1];
+      const inFocus = this.focusOnPhoneme();
+      const [startBound, endBound] = inFocus ? this.phonemeWindow() : [0, 1];
+      const span = Math.max(0.01, endBound - startBound);
+      const cycleDuration = inFocus || this.forceIsolatedAudio ? 0.75 : this.duration();
 
-      let nextProgress = this.progress() + (dt * speedMultiplier) / totalDur;
+      let nextProgress = this.progress() + (dt * speedMultiplier * span) / cycleDuration;
 
       if (nextProgress >= endBound) {
         if (this.isLooping()) {
           nextProgress = startBound;
           this.triggerSynchronizedAudio(
             this.phonemeData.selectedPhoneme(),
-            this.phonemeData.selectedExampleWord()
+            this.phonemeData.selectedExampleWord(),
+            this.forceIsolatedAudio
           );
         } else {
-          // Khi kết thúc phát 1 lần, dừng lại ở 50% (Target) hoặc endBound để người học quan sát
-          this.progress.set(this.focusOnPhoneme() ? 0.5 : 1.0);
+          this.progress.set(endBound);
           this.isPlaying.set(false);
+          this.forceIsolatedAudio = false;
           this.cancelRaf();
           return;
         }
@@ -221,15 +237,14 @@ export class AudioSyncService {
     this.rafId = requestAnimationFrame(tick);
   }
 
-  /** Phát riêng âm vị chuẩn IPA (khi bấm nút Loa cạnh ký hiệu IPA) */
+  /** Phát riêng âm vị chuẩn IPA (khi bấm nút Loa cạnh ký hiệu IPA — không làm kẹt chế độ Focus on Sound) */
   playIsolatedPhoneme(phoneme?: GermanPhoneme): void {
     if (phoneme) {
       this.phonemeData.selectPhoneme(phoneme);
     }
-    this.focusOnPhoneme.set(true);
     const [winStart] = this.phonemeWindow();
-    this.progress.set(winStart);
-    this.play();
+    this.progress.set(this.focusOnPhoneme() ? winStart : 0);
+    this.play(undefined, { isolatedAudio: true });
   }
 
   pause(): void {
@@ -249,9 +264,21 @@ export class AudioSyncService {
     this.seekToProgress(this.progress() + step);
   }
 
-  /** Nhảy nhanh đến giai đoạn Rest (0%) / Target (50%) / Release (90%) */
+  /** Nhảy nhanh đến giai đoạn Rest / Target / Release */
   jumpToPhase(phase: ArticulationPhase): void {
     this.pause();
+    if (this.focusOnPhoneme()) {
+      const [winStart, winEnd] = this.phonemeWindow();
+      if (phase === 'rest') {
+        this.seekToProgress(winStart);
+      } else if (phase === 'target') {
+        this.seekToProgress(0.5);
+      } else {
+        this.seekToProgress(winEnd);
+      }
+      return;
+    }
+
     if (phase === 'rest') {
       this.seekToProgress(0.05);
     } else if (phase === 'target') {
@@ -282,6 +309,7 @@ export class AudioSyncService {
 
   private stopPlayback(resetProgress: boolean): void {
     this.isPlaying.set(false);
+    this.forceIsolatedAudio = false;
     this.cancelRaf();
     if (this.audioElement) {
       this.audioElement.pause();
@@ -299,12 +327,17 @@ export class AudioSyncService {
     }
   }
 
-  private triggerSynchronizedAudio(phoneme: GermanPhoneme, word?: ExampleWord): void {
+  private triggerSynchronizedAudio(
+    phoneme: GermanPhoneme,
+    word?: ExampleWord,
+    isolatedOnly = false
+  ): void {
     if (typeof window === 'undefined') {
       return;
     }
 
-    const audioSrc = this.focusOnPhoneme()
+    const useIsolated = this.focusOnPhoneme() || isolatedOnly;
+    const audioSrc = useIsolated
       ? phoneme.phonemeAudioPath
       : word?.audioPath || phoneme.phonemeAudioPath;
 
@@ -319,16 +352,20 @@ export class AudioSyncService {
       this.audioElement = audio;
 
       audio.play().catch(() => {
-        this.playFallbackAudio(phoneme, word);
+        this.playFallbackAudio(phoneme, word, isolatedOnly);
       });
     } catch {
-      this.playFallbackAudio(phoneme, word);
+      this.playFallbackAudio(phoneme, word, isolatedOnly);
     }
   }
 
-  private playFallbackAudio(phoneme: GermanPhoneme, word?: ExampleWord): void {
+  private playFallbackAudio(
+    phoneme: GermanPhoneme,
+    word?: ExampleWord,
+    isolatedOnly = false
+  ): void {
     const dur = this.isSlowMotion() ? 1.1 : 0.55;
-    if (this.focusOnPhoneme() || !word) {
+    if (this.focusOnPhoneme() || isolatedOnly || !word) {
       this.synthesizePhonemeSound(phoneme, dur);
       return;
     }

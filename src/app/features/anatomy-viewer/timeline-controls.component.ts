@@ -132,7 +132,11 @@ import { PhonemeDataService } from '../../core/services/phoneme-data.service';
                 <path d="M8 5v14l11-7z" />
               </svg>
               <span>
-                {{ phonemeService.ui().timeline.playBtn }} ({{ phonemeService.selectedExampleWord().word }})
+                {{ phonemeService.ui().timeline.playBtn }} ({{
+                  audioService.focusOnPhoneme()
+                    ? phonemeService.selectedPhoneme().symbol
+                    : phonemeService.selectedExampleWord().word
+                }})
               </span>
             }
           </button>
